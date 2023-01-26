@@ -21,6 +21,21 @@
                         {{ __('Subscription') }}
                     </x-nav-link>
                 </div>
+                <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                    <x-nav-link :href="route('purchase')" :active="request()->routeIs('purchase')">
+                        {{ __('Purchase') }}
+                    </x-nav-link>
+                </div>
+                <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                    <x-nav-link :href="route('basic')" :active="request()->routeIs('basic')">
+                        {{ __('Basic') }}
+                    </x-nav-link>
+                </div>
+                <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                    <x-nav-link :href="route('premium')" :active="request()->routeIs('premium')">
+                        {{ __('Premium') }}
+                    </x-nav-link>
+                </div>
             </div>
 
             <!-- Settings Dropdown -->

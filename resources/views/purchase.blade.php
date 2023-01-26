@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Subscription') }}
+            {{ __('Purchase') }}
         </h2>
     </x-slot>
 
@@ -9,13 +9,13 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200 ">
-                    <h2>サブスクリプション</h2>
-                    <form id="setup-form" action="{{ route('subscribe.post') }}" method="post">
+                    <h2>購入</h2>
+                    <form id="setup-form" action="{{ route('purchase.post') }}" method="post">
                         @csrf
                         <input id="card-holder-name" type="text" placeholder="カード名義人" name="card-holder-name">
                         <div id="card-element"></div>
-                        <button id="card-button" data-secret="{{ $intent->client_secret }}">
-                            サブスクリプション
+                        <button id="card-button">
+                            購入
                         </button>
                     </form>
                 </div>
@@ -33,7 +33,24 @@
 
             const cardHolderName = document.getElementById('card-holder-name');
             const cardButton = document.getElementById('card-button');
-            const clientSecret = cardButton.dataset.secret;
+
+            cardButton.addEventListener('click', async (e) => {
+                e.preventDefault()
+                const { paymentMethod, error } = await 
+                stripe.createPaymentMethod(
+                    'card', cardElement, {
+                        billing_details: { name: cardHolderName.value }
+                    }
+                );
+
+                if (error) {
+                    // Display "error.message" to the user...
+                    console.log(error);
+                } else {
+                    // The card has been verified successfully...
+                    stripePaymentIdHandler(paymentMethod.id);
+                }
+            });
 
             function stripePaymentIdHandler(paymentMethodId) {
                 // Insert the paymentMethodId into the form so it gets submitted to the server
@@ -49,27 +66,6 @@
                 form.submit();
             }
 
-            cardButton.addEventListener('click', async (e) => {
-                e.preventDefault()
-                const { setupIntent, error } = await stripe.confirmCardSetup(
-                    clientSecret, {
-                        payment_method: {
-                            card: cardElement,
-                            billing_details: { name: cardHolderName.value }
-                        }
-                    }
-                );
-
-                if (error) {
-                    // Display "error.message" to the user...
-                    console.log(error);
-                } else {
-                    // The card has been verified successfully...
-                    stripePaymentIdHandler(setupIntent.payment_method);
-                }
-            });
-
-            
         </script>
     @endpush
 </x-app-layout>
